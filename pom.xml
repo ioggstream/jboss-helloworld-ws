@@ -108,8 +108,8 @@
         <version.surefire.plugin>2.10</version.surefire.plugin>
 
         <!-- maven-compiler-plugin -->
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
 
         <!-- Remote Server URL -->
         <remote.server.url>http://localhost:8080/</remote.server.url>
@@ -304,6 +304,31 @@
             </build>
         </profile>
 
+ 
+        <profile>
+            <id>arquillian-wildfly-openshift</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.14.1</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <arquillian.launch>arquillian-wildfly-openshift</arquillian.launch>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-openshift</artifactId>
+                    <version>1.0.0.Final-SNAPSHOT</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <!-- When built in OpenShift the 'openshift' profile will be 
                 used when invoking mvn. -->
@@ -328,7 +353,9 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${version.surefire.plugin}</version>
                         <configuration>
-                            <skip>true</skip>
+                            <excludes>
+                                <exclude>**/ClientTest.java</exclude>
+                            </excludes>
                         </configuration>
                     </plugin>
                 </plugins>
