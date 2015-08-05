@@ -1,0 +1,7 @@
+wildfly:
+  image: jboss/wildfly
+  ports:
+    - "18080:8080"
+    - "19999:9999"
+    - "19990:9990"
+  
