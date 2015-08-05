@@ -32,10 +32,16 @@
         <!--<configuration> -->
         <!--<property name="jbossHome">/path/to/jboss/as</property> -->
         <!--</configuration> -->
-	<configuration>
-            <property name="username">admin2Fqv8fM</property>
-            <property name="password">5KiY46JEqsJS</property>
-	</configuration>
     </container>
-
+    <container qualifier="arquillian-wildfly-openshift">
+        <configuration>
+            <property name="namespace">rpolli</property>
+            <property name="application">jbossas</property>
+            <property name="libraDomain">rhcloud.com</property>
+            <property name="sshUserName">55c0679e0c1e667073000047</property>
+            <property name="login">rpolli@redhat.com</property>
+            <property name="deploymentTimeoutInSeconds">300</property>
+            <property name="disableStrictHostChecking">true</property> 
+        </configuration>
+    </container>
 </arquillian>
