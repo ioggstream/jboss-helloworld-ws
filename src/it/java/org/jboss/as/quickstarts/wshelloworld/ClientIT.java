@@ -112,7 +112,7 @@ public class ClientIT {
 
         // Get a response from the WebService
         final String response = client.sayHelloToName("John");
-        assertEquals(response, "Hello John!");
+        assertEquals(response, "Hello Jhn!");
 
         System.out.println("[WebService] " + response);
     }
