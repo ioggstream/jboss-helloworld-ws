@@ -171,12 +171,6 @@
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
-      <!-- WildFly plug-in to deploy war -->
-      <plugin>
-        <groupId>org.wildfly.plugins</groupId>
-        <artifactId>wildfly-maven-plugin</artifactId>
-        <version>${version.wildfly.maven.plugin}</version>
-      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -197,104 +191,23 @@
         </plugins>
       </build>
     </profile>
-
-    		<profile>
-			<id>arq-base</id>
-			<activation>
-				<property>
-					<name>arquillian</name>
-					<value>false</value>
-
-				</property>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<!-- Integration Testing -->
-					<!-- Load Arquillian BOM and its dependencies: this could even go in 
-						the parent pom. -->
-					<dependency>
-						<groupId>org.jboss.arquillian</groupId>
-						<artifactId>arquillian-bom</artifactId>
-						<version>1.1.5.Final</version>
-						<scope>import</scope>
-						<type>pom</type>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-			<dependencies>
-				<!-- Integration testing -->
-				<dependency>
-					<groupId>org.jboss.arquillian.junit</groupId>
-					<artifactId>arquillian-junit-container</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<!-- Arquillian Maven dependency resolver -->
-				<dependency>
-					<groupId>org.jboss.shrinkwrap.resolver</groupId>
-					<artifactId>shrinkwrap-resolver-depchain</artifactId>
-					<scope>test</scope>
-					<type>pom</type>
-				</dependency>
-			</dependencies>
-			<build>
-				<testResources>
-					<!-- Load mvn properties into arquillian.xml which is in src/it/resources -->
-					<testResource>
-						<directory>src/it/resources</directory>
-						<filtering>true</filtering>
-					</testResource>
-				</testResources>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>integration-test</id>
-								<goals>
-									<goal>integration-test</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>verify</id>
-								<goals>
-									<goal>verify</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<!-- Run integration tests from src/it/java -->
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>add-test-amsource</id>
-								<!-- This will help m2eclipse to recognize the folder as source folder 
-									after update project configuration. -->
-								<phase>process-resources</phase>
-								<!-- <phase>generate-test-sources</phase> -->
-								<goals>
-									<goal>add-test-source</goal>
-								</goals>
-								<configuration>
-									<sources>
-										<source>src/it/java</source>
-										<source>src/it/resources</source>
-									</sources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-    
+    <profile>
+      <id>jbossas-remote</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.as.plugins</groupId>
+            <artifactId>jboss-as-maven-plugin</artifactId>
+            <version>7.7.Final</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <!-- An optional testing profile that executes tests in a remote 
                 JBoss EAP instance where the application has already been deployed -->
-      <!-- Run with: mvn clean test -Pjbossas-remote -->
-      <id>jbossas-remote</id>
+      <!-- Run with: mvn clean test -Pittest -->
+      <id>ittest</id>
       <build>
         <testResources>
           <!-- Load mvn properties into arquillian.xml which is in src/it/resources -->
@@ -305,60 +218,57 @@
         </testResources>
         <plugins>
           <plugin>
-            <groupId>org.jboss.as.plugins</groupId>
-            <artifactId>jboss-as-maven-plugin</artifactId>
-            <version>7.7.Final</version>
-          </plugin>
-          <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <version>${version.surefire.plugin}</version>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
           </plugin>
+          <!-- 
+          Failsafe
+           -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>2.18.1</version>
-		<configuration>
-            <systemProperties>
-              <property>
-                <name>serverUrl</name>
-                <value>${remote.server.url}</value>
-              </property>
-            </systemProperties>
-		</configuration>
-
+            <configuration>
+              <systemProperties>
+                <property>
+                  <name>serverUrl</name>
+                  <value>${remote.server.url}</value>
+                </property>
+              </systemProperties>
+            </configuration>
             <executions>
               <execution>
-                <id>integration-test</id>
                 <goals>
                   <goal>integration-test</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>verify</id>
-                <goals>
                   <goal>verify</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
-          <!-- Run integration tests from src/it/java -->
+          <!-- 
+          Run integration tests from src/it/java 
+          -->
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
+            <version>1.9.1</version>
             <executions>
               <execution>
                 <id>add-test-source</id>
-
                 <!-- This will help m2eclipse to recognize the folder as source folder 
 								     									after update project configuration. -->
-                <phase>process-resources</phase>
-                <!-- <phase>generate-test-sources</phase> -->
+                <!--                 <phase>process-resources</phase> -->
+                <phase>generate-test-sources</phase>
                 <goals>
                   <goal>add-test-source</goal>
                 </goals>
                 <configuration>
                   <sources>
                     <source>src/it/java</source>
+                    <source>src/test/java</source>
                     <source>src/it/resources</source>
                   </sources>
                 </configuration>
@@ -368,37 +278,35 @@
         </plugins>
       </build>
     </profile>
-    
-        <profile>
-            <!-- When built in OpenShift the 'openshift' profile will be 
+    <profile>
+      <!-- When built in OpenShift the 'openshift' profile will be 
                 used when invoking mvn. -->
-            <!-- Use this profile for any OpenShift specific customization 
+      <!-- Use this profile for any OpenShift specific customization 
                 your app will need. -->
-            <!-- By default that is to put the resulting archive into the 
+      <!-- By default that is to put the resulting archive into the 
                 'deployments' folder. -->
-            <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
-            <id>openshift</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>${version.war.plugin}</version>
-                        <configuration>
-                            <outputDirectory>deployments</outputDirectory>
-                            <warName>${project.artifactId}</warName>
-                            <failOnMissingWebXml>false</failOnMissingWebXml>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${version.surefire.plugin}</version>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
+      <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
+      <id>openshift</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>${version.war.plugin}</version>
+            <configuration>
+              <outputDirectory>deployments</outputDirectory>
+              <warName>${project.artifactId}</warName>
+              <failOnMissingWebXml>false</failOnMissingWebXml>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${version.surefire.plugin}</version>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
