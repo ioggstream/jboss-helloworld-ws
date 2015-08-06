@@ -197,14 +197,14 @@
         </plugins>
       </build>
     </profile>
-    
-    
+
     		<profile>
 			<id>arq-base</id>
 			<activation>
 				<property>
 					<name>arquillian</name>
 					<value>false</value>
+
 				</property>
 			</activation>
 			<dependencyManagement>
@@ -348,6 +348,7 @@
             <executions>
               <execution>
                 <id>add-test-source</id>
+
                 <!-- This will help m2eclipse to recognize the folder as source folder 
 								     									after update project configuration. -->
                 <phase>process-resources</phase>
@@ -398,5 +399,6 @@
                 </plugins>
             </build>
         </profile>
+
   </profiles>
 </project>
